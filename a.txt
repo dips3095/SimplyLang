@@ -1,115 +1,35 @@
 begin
   
-read a;
-read z;
-b := 5;
-if a 
-c := a + z
-else
-d := a + z;
+	x := 11;
+	c := 12;
+	read n;
 
-e := a + z;
-  
-print e;
-print d;
-print c;
-  
-  begin
-i:=5;
-j:=10;
-a:=15;
-k:=100;
-for gen in (1,10,3)
-begin
-i:=i+1;
-j:=j-1;
-if (i>j)
-begin
-a:=k;
-end;
-i:=5;
-end;
+	if n > 6
+		begin
 
-print a;
-print i;
-
-end;
-   
-  
-   a := 5;
-   read a;
-
-   zz := a or 0;	
-	
-  begin
-    b := 2;
-    a := b + b;
-    b := 9;
-    x := b;
-	
-	h := 5;
-
-    b := h;
-    c := b + b;
+			if n > 12 
+				begin
+					x := 13;
+				end
+			else 
+				a := 12;
 
 
-    b := a + x;
-    h := b + b;
 
-  end;
+			if c > 123 
+				begin
+					x := 134 / 12;
+				end
+			else 
+				h := 11;
 
-  begin
-  for b in (x, 49, 2)
-  begin
-	c := 5;
-  end;
+			u := x * c;
 
-
-  begin
-    d := 4;
-  end; 
-  b := 2;
-  a := 3;
-  a := not -5;
-  
-  y := 5;
-  
-  z := x or y and (not 5);
-
- if a if b c := 5;
-
-  begin
-    d := 4;
-  end;
-  a := (b + (b * a) / (5 - 3)) < (a - b - 3);
-  while 3 a := c;
-  
-  if a
-  begin
-    b := c;
-  end
-  else
-    c := 1;
-    
-  print x + y;
-  
-  print (x * y - 5);  
-  
-  while (4 + 6) x := 5;
-  
-end;
+		end
+	else
+		x := 1;
 
 
- a:=5;
- x:=a+0;
- x:=0+a;
- x:=a*1;
- x:=a-a;
- x:=1*a;
- x:=a*0;
- x:=0*a;
- x:=a-0;
- x:=a/1;
- x:=a or 1;
- x:=a and 1;
+	v := x * 12;
+
 end

@@ -62,12 +62,59 @@ namespace ThreeAddr
                    string.IsNullOrEmpty(OpType);
         }
 
+        public bool IsVariable(string str)
+        {
+            if (str != null && (str[0] == 'v')) return true;
+            else return false;
+        }
+        public bool IsNoGoto()
+        {
+            if (OpType != "ifgoto" && OpType != "goto") return true;
+            else return false;
+        }
+
         public override String ToString()
         {
             return $"{Label}: {Accum} = {LeftOp} {OpType} {RightOp}";
         }
 
     }
+
+    public class PhiFunc : ThreeAddrLine
+    {
+        public List<string> parameters { get; set; }
+
+        public PhiFunc(string accum, string label)
+        {
+            Label = label;
+            Accum = accum;
+            parameters = new List<string>();
+
+            parameters.Add(Accum);
+
+        }
+
+        
+
+
+
+
+        public override String ToString()
+        {
+
+            string output = $"{Label}: {Accum} = phi(";
+            foreach (var param in parameters)
+            {
+                output += param + ", ";
+            }
+            output += ")";
+
+            return output;
+        }
+
+    }
+
+
 
     public class BaseBlock
     {
@@ -79,6 +126,36 @@ namespace ThreeAddr
         public int EndLabel { get { return int.Parse(Code[Code.Count - 1].Label); } }
 
         public ThreeAddrLine LastLine { get { return Code[Code.Count - 1]; } }
+
+
+        public HashSet<string> phiVar = new HashSet<string>();
+        public void AddPhi(string accum)
+        {
+            if (!phiVar.Contains(accum))
+            {
+                phiVar.Add(accum);
+
+                var newCode = new List<ThreeAddrLine>();
+
+                newCode.Add(new PhiFunc(accum, Code[0].Label));
+                for (var i = 0; i < Code.Count; i++)
+                {
+                    var newLine = Code[i];
+                    var label = 0;
+                    Int32.TryParse(newLine.Label, out label);
+                    label++;
+
+                    newLine.Label = label.ToString();
+                    newCode.Add(newLine);
+                }
+
+                Code = newCode;
+
+            }
+
+
+
+        }
 
         public override string ToString()
         {

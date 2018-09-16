@@ -1,0 +1,21 @@
+begin
+  
+	n := 10;
+
+	while 3
+		
+			if c
+				begin
+						if b
+							c := 12;
+						else
+							c := 15;
+		
+						b := 19;
+				end
+			else
+				b := 20;
+	
+			n := 0;
+		
+end

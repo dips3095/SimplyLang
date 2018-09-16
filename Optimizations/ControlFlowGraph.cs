@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Text;
 using System.Collections.Generic;
 using ThreeAddr;
 
@@ -29,8 +30,36 @@ namespace SimpleLang.Optimizations
         private Dictionary<int, ExprSet> _genExprByStart;
 
 
-        private List<BaseBlock> _bblocks;
+        public List<BaseBlock> _bblocks { get; set; }
 
+
+        public List<ThreeAddrLine> getJoinCode()
+        {
+            return BaseBlockHelper.JoinBaseBlocks(_bblocks);
+        }
+
+
+        public Dictionary<int, int> getLineToIdBlock()
+        {
+            var startToId = new Dictionary<int, int>();
+
+            for (int i = 0; i < _bblocks.Count(); ++i)
+            {
+
+                for (int j = _bblocks[i].StartLabel; j < _bblocks[i].StartLabel + _bblocks[i].Code.Count; j++)
+                {
+                    startToId[j] = i;
+                }
+            }
+
+            return startToId;
+        }
+
+
+        public int getCountNodes()
+        {
+            return _bblocks.Count;
+        }
 
         public IEnumerable<BaseBlock> PrevBlocks(BaseBlock bblock)
         {
@@ -102,7 +131,7 @@ namespace SimpleLang.Optimizations
             }
 
         }
-    
+
         private void GenerateUseAndDefSets()
         {
             var bblocks = _baseBlockByStart.Select(kp => kp.Value).ToList();
@@ -112,7 +141,7 @@ namespace SimpleLang.Optimizations
             {
                 _useByStart[bblocks[i].StartLabel] = use[i];
                 _defByStart[bblocks[i].StartLabel] = def[i];
-            } 
+            }
         }
 
         private void GenerateGenAndKillSets()
@@ -168,7 +197,7 @@ namespace SimpleLang.Optimizations
 
                     In[i] = ActiveDefinitions.TransferByUseAndDef(Out[i], _useByStart[st], _defByStart[st]);
 
-                    change |= sz != In[i].Count; 
+                    change |= sz != In[i].Count;
                 }
 
             }
@@ -177,7 +206,8 @@ namespace SimpleLang.Optimizations
 
         }
 
-        private ValueSet GenFullValueSet(IEnumerable<ThreeAddrLine> lines){
+        private ValueSet GenFullValueSet(IEnumerable<ThreeAddrLine> lines)
+        {
             ValueSet ret = new ValueSet();
             foreach (var l in lines)
                 if (ThreeAddrOpType.IsDefinition(l.OpType))
@@ -210,14 +240,16 @@ namespace SimpleLang.Optimizations
                 {
                     var st = _bblocks[i].StartLabel;
 
-                    if (Prev[st].Count() != 0){
+                    if (Prev[st].Count() != 0)
+                    {
                         In[i] = ReachingValues.Combine(Prev[st].Select(l => Out[startToId[l]]));
                     }
 
                     var nOut = ReachingValues.TransferByBBlock(In[i], _bblocks[i]);
 
                     foreach (var vk in nOut)
-                        if (vk.Value != Out[i][vk.Key]){
+                        if (vk.Value != Out[i][vk.Key])
+                        {
                             change = true;
                             break;
                         }
@@ -232,7 +264,8 @@ namespace SimpleLang.Optimizations
         }
 
 
-        public bool IsReducible(){
+        public bool IsReducible()
+        {
             var ret = TopSort();
 
             var retreat = ret.Item2;
@@ -244,8 +277,9 @@ namespace SimpleLang.Optimizations
 
         // returns sorted order of bblocks, retreat edges, reverse edges 
         // in terms of initial bblocks ordering
-        public (List<int>, HashSet<(int, int)>, HashSet<(int,int)>) TopSort(){
-            
+        public (List<int>, HashSet<(int, int)>, HashSet<(int, int)>) TopSort()
+        {
+
             var order = new List<int>();
 
             var used = new HashSet<int>();
@@ -255,7 +289,8 @@ namespace SimpleLang.Optimizations
             order.Reverse();
 
             Dictionary<int, int> orderedToId = new Dictionary<int, int>();
-            for (int i = 0; i < order.Count; ++i){
+            for (int i = 0; i < order.Count; ++i)
+            {
                 orderedToId[order[i]] = i;
             }
 
@@ -268,14 +303,17 @@ namespace SimpleLang.Optimizations
 
 
 
-            foreach(var v in order){
+            foreach (var v in order)
+            {
                 foreach (var to in Next[v])
                 {
-                    if (orderedToId[v] >= orderedToId[to]){
+                    if (orderedToId[v] >= orderedToId[to])
+                    {
                         retreat.Add((startToId[v], startToId[to]));
                     }
 
-                    if (domms[startToId[v]].Contains(startToId[to])){
+                    if (domms[startToId[v]].Contains(startToId[to]))
+                    {
                         reverse.Add((startToId[v], startToId[to]));
                     }
                 }
@@ -291,14 +329,16 @@ namespace SimpleLang.Optimizations
             if (used.Contains(v)) return;
 
             used.Add(v);
-            foreach(var to in Next[v]){
+            foreach (var to in Next[v])
+            {
                 dfs(to, used, order);
             }
             order.Add(v);
         }
 
 
-        public List<int> CalcDommTree(){
+        public List<int> CalcDommTree()
+        {
             var tree = new List<int>(Enumerable.Range(0, _bblocks.Count));
 
             var domms = FindDommBlocks();
@@ -309,10 +349,13 @@ namespace SimpleLang.Optimizations
             var Q = new Queue<int>();
             Q.Enqueue(0);
 
-            while (Q.Count > 0){
+            while (Q.Count > 0)
+            {
                 int v = Q.Dequeue();
-                for (int to = 0; to < domms.Count; ++to){
-                    if (domms[to].Count == 1 && domms[to].Contains(v)){
+                for (int to = 0; to < domms.Count; ++to)
+                {
+                    if (domms[to].Count == 1 && domms[to].Contains(v))
+                    {
                         tree[to] = v;
                         Q.Enqueue(to);
                     }
@@ -364,9 +407,12 @@ namespace SimpleLang.Optimizations
 
                     int sz = Out[i].Count;
 
-                    if (In[i] == null){
-                        Out[i] = new HashSet<int>{i};
-                    }else{
+                    if (In[i] == null)
+                    {
+                        Out[i] = new HashSet<int> { i };
+                    }
+                    else
+                    {
                         Out[i] = In[i];
                         Out[i].Add(i);
                     }
@@ -394,7 +440,7 @@ namespace SimpleLang.Optimizations
 
             for (int i = 0; i < _bblocks.Count(); ++i)
             {
-                
+
                 In.Add(null);
                 Out.Add(new ExprSet());
 
@@ -418,14 +464,17 @@ namespace SimpleLang.Optimizations
 
                     foreach (var p in Prev[st])
                     {
-                        if (In[i] == null){
+                        if (In[i] == null)
+                        {
                             In[i] = new ExprSet(Out[startToId[p]]);
-                        } else{
+                        }
+                        else
+                        {
                             In[i].IntersectWith(Out[startToId[p]]);
                         }
                     }
 
-                    int sz =Out[i].Count;
+                    int sz = Out[i].Count;
 
                     Out[i] = AvaliableExprs.TransferByGenAndKiller(In[i], _genExprByStart[st], _defByStart[st]);
 
@@ -501,24 +550,46 @@ namespace SimpleLang.Optimizations
             foreach (var k in visited)
             {
                 var bblock = _baseBlockByStart[k];
-                if (ThreeAddrOpType.IsGoto(bblock.LastLine.OpType)){
+                if (ThreeAddrOpType.IsGoto(bblock.LastLine.OpType))
+                {
                     int to = int.Parse(bblock.LastLine.RightOp);
                     var tobl = _baseBlockByStart[to];
-                    if (tobl.Code[0].OpType == ThreeAddrOpType.Goto){
+                    if (tobl.Code[0].OpType == ThreeAddrOpType.Goto)
+                    {
                         bblock.LastLine.RightOp = tobl.Code[0].RightOp;
-                    }else if (tobl.Code.Count == 1 && tobl.Code[0].OpType == ThreeAddrOpType.Nop){
+                    }
+                    else if (tobl.Code.Count == 1 && tobl.Code[0].OpType == ThreeAddrOpType.Nop)
+                    {
                         if (Next[to].Count == 1)
                             bblock.LastLine.RightOp = Next[to][0].ToString();
                     }
                 }
             }
 
-              
-            return visited.OrderBy(x=>x)
-                          .Select(x=>_baseBlockByStart[x]).ToList();
+
+            return visited.OrderBy(x => x)
+                          .Select(x => _baseBlockByStart[x]).ToList();
+
+        }
+
+
+        public override string ToString()
+        {
+            var builder = new StringBuilder();
+            var bblocks = _bblocks;
+
+            int numBlock = 0;
+            foreach (var block in bblocks)
+            {
+                builder.AppendLine(numBlock++.ToString());
+                builder.Append(block);
+            }
+
+
+            builder.AppendLine();
+            return builder.ToString();
 
         }
 
     }
-
 }

@@ -10,7 +10,7 @@ using SimpleLang.Optimizations;
 using SimpleLang.Utility;
 using System.Linq;
 using CommandLine;
-
+using SimpleLang.SSA;
 
 namespace SimpleCompiler
 {
@@ -50,20 +50,19 @@ namespace SimpleCompiler
             bboptimizator.AddOptimization(new AlgebraIdentity());
             bboptimizator.AddOptimization(new ExprCanon());
             bboptimizator.AddOptimization(new IfGotoOptimization());
-            bboptimizator.AddOptimization(new CopyPropagationOptimization());
-            bboptimizator.AddOptimization(new DeadCodeOptimization());
-            bboptimizator.AddOptimization(new CommonSubexpressionOptimization());
+            //bboptimizator.AddOptimization(new CopyPropagationOptimization());
+            //bboptimizator.AddOptimization(new DeadCodeOptimization());
+            //bboptimizator.AddOptimization(new CommonSubexpressionOptimization());
 
 
             var cboptimizator = new CrossBlocksOptimizator();
             cboptimizator.AddOptimization(new IsNotInitVariable());
             cboptimizator.AddOptimization(new AliveBlocksOptimization());
-            cboptimizator.AddOptimization(new CrossBlocksDeadCodeOptimization());
-            cboptimizator.AddOptimization(new CrossBlockConstantPropagation());
-            cboptimizator.AddOptimization(new GlobalCommonSubexpressionsOptimization());
+            //cboptimizator.AddOptimization(new CrossBlocksDeadCodeOptimization());
+            //cboptimizator.AddOptimization(new CrossBlockConstantPropagation());
+            //cboptimizator.AddOptimization(new GlobalCommonSubexpressionsOptimization());
 
             while (bboptimizator.Optimize(codeBlocks) || cboptimizator.Optimize(codeBlocks) ) {};
-
 
 
         }
@@ -91,8 +90,31 @@ namespace SimpleCompiler
             CodeIO CP = new CodeIO(opt.OutputFile, opt.OutBinary);
             CP.Write(JoindCode);
 
+            // Блоки с нумерацией
+            Console.WriteLine();
+            Console.WriteLine();
+            int numBlock = 0;
             foreach (var block in codeBlocks)
+            {
+                Console.WriteLine(numBlock++);
                 Console.Write(block);
+            }
+
+
+            // SSA
+            var CFG = new ControlFlowGraph(codeBlocks);
+            var FOD = new FrontOnDominance(CFG); // Модифицирует CFG
+            Console.Write(FOD);
+            Console.Write(FOD.globalsToString());
+
+            Console.WriteLine("Phi");
+            Console.Write(CFG);
+
+
+            Console.ReadLine();
+
+
+            
         }
 
 
@@ -146,9 +168,10 @@ namespace SimpleCompiler
             CommandLine.Parser.Default.ParseArguments<Options>(args)
                                .WithNotParsed((ers)=>Console.WriteLine("Wrong command args"))
                                .WithParsed(opts => CompileMain(opts) );
-    
 
 
+
+            
 
         }
     }
