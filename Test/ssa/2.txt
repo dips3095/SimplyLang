@@ -1,0 +1,18 @@
+begin
+  
+	x := 11;
+	i := 12;
+
+	while x>10 
+		begin
+			i := i + 1;
+			x := x - 1;
+		end;
+
+	if (x < -10) i := 99
+	else x := -99;
+
+	print i;
+	print x;
+
+end
