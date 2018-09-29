@@ -27,7 +27,16 @@ namespace SimpleLang.SSA
 
                     foreach (var DF in DFs[boxIndex]) // По фронту доминирования блока узла 
                     {
-                        CFG._bblocks[DF].AddPhi(variable);
+                        if (CFG._bblocks[DF].AddPhi(variable)) {
+                            // Изменяем индексирование всех последующих блоков, и ранних GOTO
+                            CFG.incrBblocksFor(DF);
+                        }
+
+
+
+
+
+
                     }
                 }
             }

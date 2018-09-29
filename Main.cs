@@ -32,7 +32,7 @@ namespace SimpleCompiler
         [Option("binary", Default = false)]
         public bool OutBinary { get; set; }
 
-        [Value(0, MetaName = "input", HelpText = "File to Compile", Default = "../../a.txt")]
+        [Value(0, MetaName = "input", HelpText = "File to Compile", Default = "../../test.txt")]
         public String InputFile { get; set; }
     }
 
@@ -93,16 +93,16 @@ namespace SimpleCompiler
             // Блоки с нумерацией
             Console.WriteLine();
             Console.WriteLine();
-            int numBlock = 0;
-            foreach (var block in codeBlocks)
-            {
-                Console.WriteLine(numBlock++);
-                Console.Write(block);
-            }
 
 
             // SSA
+
+
             var CFG = new ControlFlowGraph(codeBlocks);
+
+            Console.WriteLine("Original");
+            Console.Write(CFG);
+
             var FOD = new FrontOnDominance(CFG); // Модифицирует CFG
             Console.Write(FOD);
             Console.Write(FOD.globalsToString());

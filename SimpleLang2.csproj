@@ -115,7 +115,6 @@
     <Compile Include="Utility\ComputeHelper.cs" />
     <Compile Include="Optimizations\GlobalCommonSubexpressionsOptimization.cs" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>

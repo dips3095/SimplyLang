@@ -33,6 +33,67 @@ namespace SimpleLang.Optimizations
         public List<BaseBlock> _bblocks { get; set; }
 
 
+
+
+        public void incrBblocksFor(int numblock)
+        {
+            var startLineIdBlock = _bblocks[numblock].Code[0].Label;
+            int startLineIdBlock_int = 0;
+            Int32.TryParse(startLineIdBlock, out startLineIdBlock_int);
+
+
+            for (var i = 0; i < numblock; i++)
+            {
+                for (var j = 0; j < _bblocks[i].Code.Count; j++)
+                {
+                    if (!_bblocks[i].Code[j].IsNoGoto())
+                    {
+                       
+                        string goto_val = _bblocks[i].Code[j].RightOp;
+                        int goto_val_int = 0;
+                        Int32.TryParse(goto_val, out goto_val_int);
+
+                        if (startLineIdBlock_int < goto_val_int)
+                        {
+                            _bblocks[i].Code[j].RightOp = (goto_val_int + 1).ToString();
+                        }
+
+                    }
+
+                }
+            }
+
+
+            for (var i = numblock + 1; i < _bblocks.Count; i++)
+            {
+                for (var j = 0; j < _bblocks[i].Code.Count; j++)
+                {
+                    string label = _bblocks[i].Code[j].Label;
+                    int label_int = 0;
+                    Int32.TryParse(label, out label_int);
+
+                    _bblocks[i].Code[j].Label = (label_int + 1).ToString();
+
+
+                    if (!_bblocks[i].Code[j].IsNoGoto())
+                    {
+                        string goto_val = _bblocks[i].Code[j].RightOp;
+                        int goto_val_int = 0;
+                        Int32.TryParse(goto_val, out goto_val_int);
+
+                        if (goto_val_int > label_int)
+                        {
+                            _bblocks[i].Code[j].RightOp = (goto_val_int + 1).ToString();
+                        }
+
+
+                       
+                    }
+                }
+            }
+
+        }
+
         public List<ThreeAddrLine> getJoinCode()
         {
             return BaseBlockHelper.JoinBaseBlocks(_bblocks);
@@ -581,7 +642,7 @@ namespace SimpleLang.Optimizations
             int numBlock = 0;
             foreach (var block in bblocks)
             {
-                builder.AppendLine(numBlock++.ToString());
+                builder.AppendLine("        " + numBlock++.ToString());
                 builder.Append(block);
             }
 

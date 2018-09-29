@@ -1,0 +1,99 @@
+DF
+0:
+1: 1
+2:
+3: 1
+4: 6
+5: 6
+6: 1
+7: 9
+8: 9
+9: 1
+10: 1
+11: 1
+12:
+
+
+Globals
+v0
+v1
+v2
+
+Phi
+        0
+BLOCK START
+0: v0 =  assign 100
+1: v1 =  assign 100
+BLOCK END
+        1
+BLOCK START
+2: v2 = phi(v2, )
+3: v1 = phi(v1, )
+4: v0 = phi(v0, )
+5: p2 =  assign v0
+6: p1 = p2 > 10
+7:  = p1 ifgoto 9
+BLOCK END
+        2
+BLOCK START
+8:  =  goto 34
+BLOCK END
+        3
+BLOCK START
+9: p4 =  assign v1
+10: p3 = p4 > 10
+11:  = p3 ifgoto 13
+BLOCK END
+        4
+BLOCK START
+12:  =  goto 15
+BLOCK END
+        5
+BLOCK START
+13: p6 =  assign v0
+14: v0 = p6 - 10
+BLOCK END
+        6
+BLOCK START
+15: v0 = phi(v0, )
+16: p8 =  assign v1
+17: p7 = p8 > 25
+18:  = p7 ifgoto 20
+BLOCK END
+        7
+BLOCK START
+19:  =  goto 22
+BLOCK END
+        8
+BLOCK START
+20: p10 =  assign v0
+21: v0 = p10 - 14
+BLOCK END
+        9
+BLOCK START
+22: v0 = phi(v0, )
+23: p12 =  assign v1
+24: v1 = p12 / 2
+25: v2 =  assign v0
+26: p15 =  assign v2
+27: p14 = p15 > 12
+28:  = p14 ifgoto 30
+BLOCK END
+        10
+BLOCK START
+29:  =  goto 2
+BLOCK END
+        11
+BLOCK START
+30: p17 =  assign v2
+31: p18 =  assign v1
+32: v2 = p17 - p18
+33:  =  goto 2
+BLOCK END
+        12
+BLOCK START
+34: p19 =  assign v0
+35:  =  write p19
+36: p20 =  assign v1
+37:  =  write p20
+BLOCK END

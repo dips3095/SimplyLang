@@ -1,0 +1,66 @@
+DF
+0:
+1: 1
+2:
+3: 1
+4:
+5: 7
+6: 7
+7:
+
+
+Globals
+v0
+v1
+
+Phi
+        0
+BLOCK START
+0: v0 =  assign 11
+1: v1 =  assign 12
+BLOCK END
+        1
+BLOCK START
+2: v0 = phi(v0, )
+3: v1 = phi(v1, )
+4: p2 =  assign v0
+5: p1 = p2 > 10
+6:  = p1 ifgoto 8
+BLOCK END
+        2
+BLOCK START
+7:  =  goto 13
+BLOCK END
+        3
+BLOCK START
+8: p4 =  assign v1
+9: v1 = p4 + 1
+10: p6 =  assign v0
+11: v0 = p6 - 1
+12:  =  goto 2
+BLOCK END
+        4
+BLOCK START
+13: p8 =  assign v0
+14: p9 =  assign -10
+15: p7 = p8 < p9
+16:  = p7 ifgoto 19
+BLOCK END
+        5
+BLOCK START
+17: v0 =  assign -99
+18:  =  goto 20
+BLOCK END
+        6
+BLOCK START
+19: v1 =  assign 99
+BLOCK END
+        7
+BLOCK START
+20: v1 = phi(v1, )
+21: v0 = phi(v0, )
+22: p11 =  assign v1
+23:  =  write p11
+24: p12 =  assign v0
+25:  =  write p12
+BLOCK END

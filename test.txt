@@ -1,21 +1,35 @@
 begin
   
-	n := 10;
+	x := 11;
+	c := 12;
+	read n;
 
-	while 3
-		
-			if c
+	if n > 6
+		begin
+
+			if n > 12 
 				begin
-						if b
-							c := 12;
-						else
-							c := 15;
-		
-						b := 19;
+					x := 13;
 				end
-			else
-				b := 20;
-	
-			n := 0;
-		
+			else 
+				a := 12;
+
+
+
+			if c > 123 
+				begin
+					x := 134 / 12;
+				end
+			else 
+				h := 11;
+
+			u := x * c;
+
+		end
+	else
+		x := 1;
+
+
+	v := x * 12;
+
 end

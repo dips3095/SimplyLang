@@ -129,7 +129,9 @@ namespace ThreeAddr
 
 
         public HashSet<string> phiVar = new HashSet<string>();
-        public void AddPhi(string accum)
+
+
+        public bool AddPhi(string accum)
         {
             if (!phiVar.Contains(accum))
             {
@@ -138,6 +140,8 @@ namespace ThreeAddr
                 var newCode = new List<ThreeAddrLine>();
 
                 newCode.Add(new PhiFunc(accum, Code[0].Label));
+
+                // Переиндексация
                 for (var i = 0; i < Code.Count; i++)
                 {
                     var newLine = Code[i];
@@ -145,14 +149,27 @@ namespace ThreeAddr
                     Int32.TryParse(newLine.Label, out label);
                     label++;
 
+                    if (!newLine.IsNoGoto())
+                    {
+                        string goto_val = newLine.RightOp;
+                        int goto_val_int = 0;
+                        Int32.TryParse(goto_val, out goto_val_int);
+
+                        newLine.RightOp = (goto_val_int + 1).ToString();
+                    }
+
+
                     newLine.Label = label.ToString();
                     newCode.Add(newLine);
                 }
 
                 Code = newCode;
-
+                return true;
             }
-
+            else
+            {
+                return false;
+            }
 
 
         }
