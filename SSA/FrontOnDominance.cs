@@ -11,7 +11,7 @@ namespace SimpleLang.SSA
     {
 
         public List<HashSet<int>> DFs = new List<HashSet<int>>();
-        HashSet<string> globals = new HashSet<string>();
+        public HashSet<string> globals = new HashSet<string>();
 
 
         public void phiAccommodation(ControlFlowGraph CFG, HashSet<string> globals)

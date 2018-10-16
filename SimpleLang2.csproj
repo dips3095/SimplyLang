@@ -75,6 +75,7 @@
     <Compile Include="Optimizations\ConstantsOptimization.cs" />
     <Compile Include="Optimizations\NopDeleteOptimization.cs" />
     <Compile Include="SSA\FrontOnDominance.cs" />
+    <Compile Include="SSA\RenamePhiFuncs.cs" />
     <Compile Include="Utility\CodeIO.cs" />
     <Compile Include="Utility\ToStringHelper.cs" />
     <Compile Include="Visitors\AssignCountVisitor.cs" />
