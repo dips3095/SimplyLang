@@ -35,11 +35,30 @@ namespace SimpleLang.RenamePhiFuncs
 
         }
 
-    public RenamePhiFuncs(FrontOnDominance Fod, ControlFlowGraph CFG)
+
+        public void Rename(BaseBlock B)
         {
+            foreach (var line in B.Code.ToArray()) // По всем строкам блока узла
+            {
+                if (line.IsPhiPhunc())
+                {
+                    line.Accum = NewName(line.Accum);
+                }
+                else
+                {
+                    line.LeftOp = stacks[line.LeftOp].Peek();
+                    line.RightOp = stacks[line.RightOp].Peek();
+                    line.Accum = NewName(line.Accum);
+                }
+            }
+        }
+
+
+        public RenamePhiFuncs(FrontOnDominance Fod, ControlFlowGraph CFG)
+        {
+            initCountersAndStacks(Fod);
             var dommTree = CFG.CalcDommTree();
             var B = CFG._bblocks[dommTree[0]];
-
         }
 
     }

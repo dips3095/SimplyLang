@@ -78,6 +78,11 @@ namespace ThreeAddr
             return $"{Label}: {Accum} = {LeftOp} {OpType} {RightOp}";
         }
 
+        public  virtual bool IsPhiPhunc()
+        {
+            return false;
+        }
+
     }
 
     public class PhiFunc : ThreeAddrLine
@@ -94,9 +99,12 @@ namespace ThreeAddr
 
         }
 
-        
 
 
+        public  override bool IsPhiPhunc()
+        {
+            return true;
+        }
 
 
         public override String ToString()
