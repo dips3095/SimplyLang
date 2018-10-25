@@ -102,14 +102,25 @@ namespace SimpleCompiler
 
             Console.WriteLine("Original");
             Console.Write(CFG);
+            Console.Write(CFG.FindDommBlocks());
+            var tmp = CFG.FindDommBlocks();
+            for(var i=0;i<tmp.Count;++i) { 
+                Console.Write(i);
+                Console.Write(' ');
+                foreach (var j in tmp[i])
+                    Console.Write(j);
 
+                Console.WriteLine();
+            }
+            
+            /*
             var FOD = new FrontOnDominance(CFG); // Модифицирует CFG
             Console.Write(FOD);
             Console.Write(FOD.globalsToString());
 
             Console.WriteLine("Phi");
             Console.Write(CFG);
-
+            */
 
             Console.ReadLine();
 

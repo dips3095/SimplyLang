@@ -12,18 +12,38 @@ namespace SimpleLang.RenamePhiFuncs
     {
         Dictionary<string,int> counters;
         Dictionary<string,Stack<string>> stacks;
-      
+        List<int> Idom;
+        Dictionary<int, List<int>> succesor_list_cfg;
+        Dictionary<int, List<int>> succesor_list_dom;
+        ControlFlowGraph CFG_ins;
+        List<HashSet<int>> Dom;
 
-        public void initCountersAndStacks(FrontOnDominance Fod)
+        public void initCountersAndStacks(FrontOnDominance Fod, ControlFlowGraph CFG)
         {
             foreach(string i in Fod.globals)
             {
                 counters.Add(i, 0);
                 stacks.Add(i, new Stack<string>());
             }
-            
+            CFG_ins = CFG;
+            Idom = CFG.CalcDommTree();
+            succesor_list_cfg = CFG.Next;
+            Dom = CFG_ins.FindDommBlocks();
+            int countNodes = CFG.getCountNodes();
+            var nodes = Enumerable.Range(0, countNodes);
+            foreach (var n in nodes)
+            {
+                var tmp_list = new List<int>();
+                for (int boxIndex = 0; boxIndex < CFG.getCountNodes(); boxIndex++)
+                {
 
+                    if (boxIndex == n) { continue; }
+                    if (Idom[boxIndex] == n) { tmp_list.Add(boxIndex); }
+                }
+                succesor_list_dom.Add(n, tmp_list);
+            }
         }
+
         public string NewName(string n)
         {
             var i = counters[n];
@@ -35,15 +55,16 @@ namespace SimpleLang.RenamePhiFuncs
         }
 
 
-        public void Rename(int B, ControlFlowGraph CFG, List<int> dommTree)
+        public void Rename(int B)
         {
-            foreach (var line in CFG._bblocks[dommTree[B]].Code.ToArray()) // По всем строкам блока узла
+
+            foreach (var line in CFG_ins._bblocks[B].Code) // По всем строкам блока узла
             {
                 if (line.IsPhiPhunc())
                 {
                     line.Accum = NewName(line.Accum);
                 }
-                else
+                else if(line.IsNoGoto())
                 {
                     line.LeftOp = stacks[line.LeftOp].Peek();
                     line.RightOp = stacks[line.RightOp].Peek();
@@ -51,20 +72,29 @@ namespace SimpleLang.RenamePhiFuncs
                 }
             }
 
-            var succesor_list_cfg = CFG.Next;
+
+            
             foreach(var bl in succesor_list_cfg[B]) {
+                var tmp_block = CFG_ins._bblocks[bl].Code;
+                    /*уточнить*/
             }
 
-            var dom_blocks_cfg = CFG.FindDommBlocks();
+            foreach (var bl in succesor_list_dom[B])
+            {
+                Rename(B + 1);
+            }
 
 
-            foreach (var line in CFG._bblocks[dommTree[B]].Code.ToArray())
+
+
+
+            foreach (var line in CFG_ins._bblocks[B].Code)
             {
                 if (line.IsPhiPhunc())
                 {
                     stacks[line.Accum].Pop();
                 }
-                else
+                else if (line.IsNoGoto())
                 {
                     stacks[line.Accum].Pop();
                 }
@@ -75,10 +105,10 @@ namespace SimpleLang.RenamePhiFuncs
 
         public RenamePhiFuncs(FrontOnDominance Fod, ControlFlowGraph CFG)
         {
-            initCountersAndStacks(Fod);
-            var dommTree = CFG.CalcDommTree();
-            var blocks = CFG._bblocks[dommTree[0]];
-            var B = CFG._bblocks[dommTree[0]];
+            initCountersAndStacks(Fod, CFG);
+            /*var blocks = CFG._bblocks[Idom[0]];*/
+            var B = Idom[0];
+            Rename(B);
         }
 
     }
