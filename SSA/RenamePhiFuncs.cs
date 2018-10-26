@@ -5,6 +5,7 @@ using System.Text;
 using System.Collections.Generic;
 using SimpleLang.Optimizations;
 using SimpleLang.SSA;
+using System.Text.RegularExpressions;
 
 namespace SimpleLang.RenamePhiFuncs
 {
@@ -17,24 +18,31 @@ namespace SimpleLang.RenamePhiFuncs
         Dictionary<int, List<int>> succesor_list_dom;
         ControlFlowGraph CFG_ins;
         List<HashSet<int>> Dom;
+        int countNodes;
 
         public void initCountersAndStacks(FrontOnDominance Fod, ControlFlowGraph CFG)
         {
-            foreach(string i in Fod.globals)
+            counters = new Dictionary<string, int>();
+            stacks = new Dictionary<string, Stack<string>>();
+            foreach (string i in Fod.globals)
             {
                 counters.Add(i, 0);
                 stacks.Add(i, new Stack<string>());
             }
+
             CFG_ins = CFG;
-            Idom = CFG.CalcDommTree();
-            succesor_list_cfg = CFG.Next;
+
+            Idom = CFG_ins.CalcDommTree();
+
+            succesor_list_cfg = CFG_ins.Next;
             Dom = CFG_ins.FindDommBlocks();
-            int countNodes = CFG.getCountNodes();
+            countNodes = CFG_ins.getCountNodes();
             var nodes = Enumerable.Range(0, countNodes);
+            succesor_list_dom = new Dictionary<int, List<int>>();
             foreach (var n in nodes)
             {
                 var tmp_list = new List<int>();
-                for (int boxIndex = 0; boxIndex < CFG.getCountNodes(); boxIndex++)
+                for (int boxIndex = 0; boxIndex < CFG_ins.getCountNodes(); boxIndex++)
                 {
 
                     if (boxIndex == n) { continue; }
@@ -57,6 +65,7 @@ namespace SimpleLang.RenamePhiFuncs
 
         public void Rename(int B)
         {
+            if (B >= countNodes) { return; }
 
             foreach (var line in CFG_ins._bblocks[B].Code) // По всем строкам блока узла
             {
@@ -76,7 +85,23 @@ namespace SimpleLang.RenamePhiFuncs
             
             foreach(var bl in succesor_list_cfg[B]) {
                 var tmp_block = CFG_ins._bblocks[bl].Code;
-                    /*уточнить*/
+                foreach (var line in tmp_block)
+                {
+                    if (line.IsPhiPhunc())
+                    {   
+                        /*for(var par=0; par<line.Count; par++)*/
+                        foreach(var par in line.parameters)
+                        {
+                            if (Regex.IsMatch(par, @"\d"))
+                            {
+                                /*par = stacks[par].Peek();*/
+                                line.parameters.Remove(par);
+                                line.parameters.Add(stacks[par].Peek());
+                                break;
+                            }
+                        }
+                    }
+                }
             }
 
             foreach (var bl in succesor_list_dom[B])
@@ -107,8 +132,8 @@ namespace SimpleLang.RenamePhiFuncs
         {
             initCountersAndStacks(Fod, CFG);
             /*var blocks = CFG._bblocks[Idom[0]];*/
-            var B = Idom[0];
-            Rename(B);
+            /*var B = Idom[0];*/
+            Rename(0);
         }
 
     }

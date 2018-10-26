@@ -52,6 +52,7 @@ namespace ThreeAddr
         public string LeftOp { get; set; }
         public string RightOp { get; set; }
         public string OpType { get; set; }
+        public List<string> parameters { get; set; }
 
         public bool IsEmpty()
         {
