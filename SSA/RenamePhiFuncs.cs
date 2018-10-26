@@ -42,7 +42,7 @@ namespace SimpleLang.RenamePhiFuncs
             foreach (var n in nodes)
             {
                 var tmp_list = new List<int>();
-                for (int boxIndex = 0; boxIndex < CFG_ins.getCountNodes(); boxIndex++)
+                for (int boxIndex = 0; boxIndex < CFG_ins.getCountNodes(); boxIndex++) //построение списка Succ дерева доминаторов
                 {
 
                     if (boxIndex == n) { continue; }
@@ -92,7 +92,7 @@ namespace SimpleLang.RenamePhiFuncs
                         /*for(var par=0; par<line.Count; par++)*/
                         foreach(var par in line.parameters)
                         {
-                            if (Regex.IsMatch(par, @"\d"))
+                            if (!Regex.IsMatch(par, @"\d"))          //если нет цифры в имени, значит ещё не переименовывали
                             {
                                 /*par = stacks[par].Peek();*/
                                 line.parameters.Remove(par);
